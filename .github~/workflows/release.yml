@@ -38,12 +38,17 @@ jobs:
 
       - name: "Validate input"
         # yamllint disable rule:line-length
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          CHANGELOG: ${{ github.event.inputs.changelog }}
         run: |
-          [[ "${{ github.event.inputs.changelog }}" != "true" ]] && { echo 'You didn''t update the changelog.' ; exit 1; }
-          [[ -n "${{ github.event.inputs.version }}" ]] || { echo 'Version not specified!'; exit 1; }
-          [[ "${{ github.event.inputs.version }}" != v* ]] && { echo 'Version does not start with v!' ; exit 1; }
+          [[ "$CHANGELOG" != "true" ]] && { echo 'You didn''t update the changelog.' ; exit 1; }
+          [[ -n "$VERSION" ]] || { echo 'Version not specified!'; exit 1; }
+          [[ "$VERSION" != v* ]] && { echo 'Version does not start with v!' ; exit 1; }
 
       - name: "Tag and release"
+        env:
+          VERSION: ${{ github.event.inputs.version }}
         run: |
-          git tag ${{ github.event.inputs.version }}
-          git push origin ${{ github.event.inputs.version }}
+          git tag "$VERSION"
+          git push origin "$VERSION"
